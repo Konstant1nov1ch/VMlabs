@@ -8,11 +8,10 @@ public class Gauss_Seidel {
     private static double[][] valA;
     private static double[] valB;
     private final double eps;
-    double[] x;
+    double[] VectorOfAnswers;
     double[] p;
     int iter = 0;
     public Gauss_Seidel(double expectedly) {
-
         eps = expectedly;
     }
     public static boolean checkDominant(double[][] M, int n) {
@@ -88,39 +87,39 @@ public class Gauss_Seidel {
         }
     return false;
     }
-    boolean checkRes(double[] x, double[] p, int n, double eps) {
+    boolean checkRes(double[] VectorOfAnswers, double[] p, int n, double eps) {
         double norm = 0;
         for(int i = 0; i < n; i++){
-            norm+=(x[i] - p[i])*(x[i] - p[i]);
+            norm+=(VectorOfAnswers[i] - p[i])*(VectorOfAnswers[i] - p[i]);
         }
         return (Math.sqrt(norm) <= eps);
     }
-    double okr(double x, double eps){
+    double rounding(double VectorOfAnswers, double eps){
         int i = 0;
         double newEps = eps;
         while (newEps < 1){
             i++;
             newEps*=10;
         }
-        int okr = (int) Math.pow(10.0, i);
-        x = (int)(x*okr + 0.5)/(double)(okr);
-        return x;
+        int rounding = (int) Math.pow(10.0, i);
+        VectorOfAnswers = (int)(VectorOfAnswers*rounding + 0.5)/(double)(rounding);
+        return VectorOfAnswers;
     }
     public void solve(double[][] M,double[] B) throws IOException {
     //решение
-        x = new double[M.length];
+        VectorOfAnswers = new double[M.length];
         p = new double[M.length];
         for(int i = 0 ; i <M.length; i ++){
-            x[i] = 1;}
+            VectorOfAnswers[i] = 1;}
         if(checkDominant(M, M.length)){
-            while(!checkRes(x, p, M.length, eps)){
-                System.arraycopy(x, 0, p, 0, M.length);
+            while(!checkRes(VectorOfAnswers, p, M.length, eps)){
+                System.arraycopy(VectorOfAnswers, 0, p, 0, M.length);
                 for(int j = 0; j < M.length; j ++){
                     double var = 0;
                     for(int i = 0; i < M.length; i ++){
                         if(i!=j){
-                            var+=(M[j][i])*x[i];}}
-                    x[j] = (B[j] - var)/M[j][j];}
+                            var+=(M[j][i])*VectorOfAnswers[i];}}
+                    VectorOfAnswers[j] = (B[j] - var)/M[j][j];}
                 iter++;
                 if(iter >= 100000){
                     System.out.println("Решение не достигнуто спустя 100000 иттераций(");
@@ -131,7 +130,7 @@ public class Gauss_Seidel {
             System.out.println("Решение системы:");
             System.out.println("Иттераций: " + iter);
             for(int i = 0; i < M.length; i++){
-                System.out.println("x" + i + " = " + okr(x[i], eps));
+                System.out.println("x" + i + " = " + rounding(VectorOfAnswers[i], eps));
             }
 
         }else{
