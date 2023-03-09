@@ -1,4 +1,4 @@
-package com.vmlab1.itmoEdu;
+package edu.itmoEdu.vmLab1;
 
 import java.io.*;
 import java.util.Random;
