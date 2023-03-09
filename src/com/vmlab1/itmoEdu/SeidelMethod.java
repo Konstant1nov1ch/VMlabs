@@ -1,22 +1,23 @@
-package com.itmoEdu.vmlab1;
+package com.vmlab1.itmoEdu;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class Gauss_Seidel {
-    private static double[][] valA;
-    private static double[] valB;
-    private final double eps;
-    double[] VectorOfAnswers;
-    double[] p;
+public class SeidelMethod {
+    static boolean test = true;
+    private static float[][] valA;
+    private static float[] valB;
+    private final float eps;
+    float[] VectorOfAnswers;
+    float[] p;
     int iter = 0;
-    public Gauss_Seidel(double expectedly) {
+    public SeidelMethod(float expectedly) {
         eps = expectedly;
     }
-    public static boolean checkDominant(double[][] M, int n) {
+    public static boolean checkDominant(float[][] M, int n) {
         int i, j, k = 1;
-        double sum;
+        float sum;
         for(i = 0; i < n; i ++){
             sum = 0;
             for(j = 0; j < n; j ++){
@@ -26,21 +27,21 @@ public class Gauss_Seidel {
             if(sum>Math.abs(M[i][i])){
                 k = 0;
             }
-        }if(k == 0){
+        }if(k == 0) {
             k = 1;
-            for(i = 0; i < n; i ++){
+            for (i = 0; i < n; i++) {
                 sum = 0;
                 for (j = M.length - 1; j >= 0; j--) {
                     sum += Math.abs(M[i][M.length - 1 - j]);
-                    sum -= Math.abs(M[j][M.length - 1 - j]);
-                    if(sum>Math.abs(M[j][M.length - 1 - j])){
-                        k = 0;
-                    }
+                }
+                sum -= Math.abs(M[i][M.length - 1 - i]);
+                if (sum > Math.abs(M[i][M.length - 1 - i])) {
+                    k = 0;
                 }
             }
-            if(k == 1){
-                double [] temp;
-                for(int l = 0; l < M.length/2; l++){
+            if (k == 1) {
+                float[] temp;
+                for (int l = 0; l < M.length / 2; l++) {
                     temp = M[l];
                     M[l] = M[M.length - l - 1];
                     M[M.length - l - 1] = temp;
@@ -49,11 +50,11 @@ public class Gauss_Seidel {
         }
         return (k == 1);
     }
-    private boolean tryToRewriteString(double[][] M, double[] B, int n) {
+    private boolean tryToRewriteString(float[][] M, float[] B, int n) {
         if(n>=M.length-1){
             if(checkDominant(M, M.length)) {
-                valA = new double[M.length][M.length];
-                valB = new double[B.length];
+                valA = new float[M.length][M.length];
+                valB = new float[B.length];
                 for (int i = 0; i < M.length; i++) {
                     for (int j = 0; j < M.length + 1; j++) {
                         if (j != M.length) {
@@ -63,11 +64,12 @@ public class Gauss_Seidel {
                         }
                     }
                 }
-            }return true;
+                return true;
+            }
         }else{
-            for (int i = n; i < M.length; i++) {
-                double[] t = M[n];
-                double b = B[n];
+            for (int i = n; i < M.length ; i++) {
+                float[] t = M[n];
+                float b = B[n];
                 B[n] = B[i];
                 B[i]=b;
                 M[n] = M[i];
@@ -85,43 +87,43 @@ public class Gauss_Seidel {
                 }
             }
         }
-    return false;
+        return false;
     }
-    boolean checkRes(double[] VectorOfAnswers, double[] p, int n, double eps) {
-        double norm = 0;
+    boolean checkRes(float[] VectorOfAnswers, float[] p, int n, float eps) {
+        float norm = 0;
         for(int i = 0; i < n; i++){
             norm+=(VectorOfAnswers[i] - p[i])*(VectorOfAnswers[i] - p[i]);
         }
         return (Math.sqrt(norm) <= eps);
     }
-    double rounding(double VectorOfAnswers, double eps){
+    float roundingAnswers(float VectorOfAnswers, float eps){
         int i = 0;
-        double newEps = eps;
+        float newEps = eps;
         while (newEps < 1){
             i++;
             newEps*=10;
         }
         int rounding = (int) Math.pow(10.0, i);
-        VectorOfAnswers = (int)(VectorOfAnswers*rounding + 0.5)/(double)(rounding);
+        VectorOfAnswers = (int)(VectorOfAnswers*rounding + 0.5)/(float)(rounding);
         return VectorOfAnswers;
     }
-    public void solve(double[][] M,double[] B) throws IOException {
-    //решение
-        VectorOfAnswers = new double[M.length];
-        p = new double[M.length];
+    public void solveMatrix(float[][] M,float[] B) throws IOException {
+        //решение
+        VectorOfAnswers = new float[M.length];
+        p = new float[M.length];
         for(int i = 0 ; i <M.length; i ++){
             VectorOfAnswers[i] = 1;}
         if(checkDominant(M, M.length)){
             while(!checkRes(VectorOfAnswers, p, M.length, eps)){
                 System.arraycopy(VectorOfAnswers, 0, p, 0, M.length);
                 for(int j = 0; j < M.length; j ++){
-                    double var = 0;
+                    float var = 0;
                     for(int i = 0; i < M.length; i ++){
                         if(i!=j){
                             var+=(M[j][i])*VectorOfAnswers[i];}}
                     VectorOfAnswers[j] = (B[j] - var)/M[j][j];}
                 iter++;
-                if(iter >= 100000){
+                if(iter >= 100){
                     System.out.println("Решение не достигнуто спустя 100000 иттераций(");
                     System.exit(0);
                     break;
@@ -130,12 +132,10 @@ public class Gauss_Seidel {
             System.out.println("Решение системы:");
             System.out.println("Иттераций: " + iter);
             for(int i = 0; i < M.length; i++){
-                System.out.println("x" + i + " = " + rounding(VectorOfAnswers[i], eps));
+                System.out.println("x" + i + " = " + roundingAnswers(VectorOfAnswers[i], eps));
             }
-
         }else{
             String num = "";
-            boolean test = true;
             BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
             while(test){
                 System.out.println("""
@@ -150,7 +150,7 @@ public class Gauss_Seidel {
             switch (num){
                 case ("1"):
                     if(tryToRewriteString(M, B, 0)){
-                        solve(valA, valB);
+                        solveMatrix(valA, valB);
                     }else{
                         System.out.println("Не получилось( ");
                     }
@@ -159,7 +159,7 @@ public class Gauss_Seidel {
                     System.out.println("Отмена");
                     break;
                 default:
-                    throw new IllegalStateException("Unexpected value: " + num);
+                    System.out.println("Не получилось( ");
             }
         }
     }
