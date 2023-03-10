@@ -6,9 +6,7 @@ import java.io.InputStreamReader;
 
 public class SeidelMethod {
     static boolean test = true;
-    private static float[][] valA;
-    private static float[] valB;
-    private final float eps;
+    final float eps;
     float[] VectorOfAnswers;
     float[] p;
     int iter = 0;
@@ -26,6 +24,7 @@ public class SeidelMethod {
             sum-=Math.abs(M[i][i]);
             if(sum>Math.abs(M[i][i])){
                 k = 0;
+                break;
             }
         }if(k == 0) {
             k = 1;
@@ -37,6 +36,7 @@ public class SeidelMethod {
                 sum -= Math.abs(M[i][M.length - 1 - i]);
                 if (sum > Math.abs(M[i][M.length - 1 - i])) {
                     k = 0;
+                    break;
                 }
             }
             if (k == 1) {
@@ -50,44 +50,24 @@ public class SeidelMethod {
         }
         return (k == 1);
     }
-    private boolean tryToRewriteString(float[][] M, float[] B, int n) {
-        if(n>=M.length-1){
-            if(checkDominant(M, M.length)) {
-                valA = new float[M.length][M.length];
-                valB = new float[B.length];
-                for (int i = 0; i < M.length; i++) {
-                    for (int j = 0; j < M.length + 1; j++) {
-                        if (j != M.length) {
-                            valA[i][j] = M[i][j];
-                        } else {
-                            valB[i] = B[i];
-                        }
+    private boolean tryToRewriteString(float[][] M, float[] B) {
+            for(int i = 0; i < M.length; i++){
+                float LocalMax = Math.abs(M[i][0]);
+                int CountMax;
+                for(int j = i; j < M.length; j++){
+                    if(LocalMax < Math.abs(M[j][i])) {
+                        LocalMax = Math.max(LocalMax, Math.abs(M[j][i]));
+                        CountMax = j;
+                        float[] t = M[i];
+                        float b = B[i];
+                        M[i] = M[CountMax];
+                        M[CountMax] = t;
+                        B[i] = B[CountMax];
+                        B[CountMax] = b;
                     }
                 }
-                return true;
             }
-        }else{
-            for (int i = n; i < M.length ; i++) {
-                float[] t = M[n];
-                float b = B[n];
-                B[n] = B[i];
-                B[i]=b;
-                M[n] = M[i];
-                M[i] = t;
-                if(valA == null){
-                    tryToRewriteString(M,B, n + 1);
-                }else{
-                    t = M[n];
-                    b = B[n];
-                    B[n] = B[i];
-                    B[i] = b;
-                    M[n] = M[i];
-                    M[i] = t;
-                    return true;
-                }
-            }
-        }
-        return false;
+    return checkDominant(M, M.length);
     }
     boolean checkRes(float[] VectorOfAnswers, float[] p, int n, float eps) {
         float norm = 0;
@@ -123,8 +103,8 @@ public class SeidelMethod {
                             var+=(M[j][i])*VectorOfAnswers[i];}}
                     VectorOfAnswers[j] = (B[j] - var)/M[j][j];}
                 iter++;
-                if(iter >= 100){
-                    System.out.println("Решение не достигнуто спустя 100000 иттераций(");
+                if(iter >= 1000){
+                    System.out.println("Решение не достигнуто спустя 1000 иттераций(");
                     System.exit(0);
                     break;
                 }
@@ -147,19 +127,16 @@ public class SeidelMethod {
                     test = false;
                 }
             }
-            switch (num){
-                case ("1"):
-                    if(tryToRewriteString(M, B, 0)){
-                        solveMatrix(valA, valB);
-                    }else{
-                        System.out.println("Не получилось( ");
+            switch (num) {
+                case ("1") -> {
+                    if (tryToRewriteString(M, B)) {
+                        solveMatrix(M, B);
+                    } else {
+                        System.out.println("Не получилось добиться диагонального преобладания");
                     }
-                    break;
-                case ("2"):
-                    System.out.println("Отмена");
-                    break;
-                default:
-                    System.out.println("Не получилось( ");
+                }
+                case ("2") -> System.out.println("Отмена");
+                default -> System.out.println(" ");
             }
         }
     }

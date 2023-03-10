@@ -16,18 +16,20 @@ public class Main {
                         #2 - Чтение файла.\s
                         #3 - Случайные знанчения для теста программы.""");
                 num =  in.readLine();
-                if ((num.equals("1")) || (num.equals("2")) || (num.equals("3"))){
+                if ((num.equals("1")) || (num.equals("2")) || (num.equals("3"))) {
                     test = false;
                 }
-            }catch (IOException w){
+            }catch (IOException w) {
                 System.out.println("Ошибка ввода");
-            }try {
-                in.close();
-            } catch (IOException r) {
-                System.out.println("Error");}
+                try {
+                    in.close();
+                } catch (IOException r) {
+                    System.out.println("Error");
+                }
+            }
         }
-        switch (num){
-            case ("1"):
+        switch (num) {
+            case ("1") -> {
                 try {
                     float[][] M;
                     float[] B;
@@ -38,45 +40,46 @@ public class Main {
                     B = new float[n];
                     System.out.println("Введите ожидаемую погрешность:");
                     float eps = Float.parseFloat(in.readLine());
-                    for(int i = 0; i < n; i++){
-                        System.out.println("Введите "+ (i + 1) +"-ую строку матрици A|B:");
+                    for (int i = 0; i < n; i++) {
+                        System.out.println("Введите " + (i + 1) + "-ую строку матрици A|B:");
                         StringTokenizer inputMatrix = new StringTokenizer(in.readLine());
-                        for (int j = 0; j < n+1; j++)
-                            if(j >= n){
+                        for (int j = 0; j < n + 1; j++)
+                            if (j >= n) {
                                 B[i] = Float.parseFloat(inputMatrix.nextToken().replace(',', '.'));
-                            }else{
-                                M[i][j] = Float.parseFloat(inputMatrix.nextToken().replace(',', '.'));}
+                            } else {
+                                M[i][j] = Float.parseFloat(inputMatrix.nextToken().replace(',', '.'));
+                            }
                     }
                     SeidelMethod gausSeidel = new SeidelMethod(eps);
                     gausSeidel.solveMatrix(M, B);
                 } catch (IOException e) {
                     System.out.println(e.getMessage());
-                        try {
-                            in.close();
-                        } catch (IOException r) {
-                            System.out.println(r.getMessage());
-                        }
-                        System.out.println("Ошибка ввода");
+                    try {
+                        in.close();
+                    } catch (IOException r) {
+                        System.out.println(r.getMessage());
+                    }
+                    System.out.println("Ошибка ввода");
                 }
-                break;
-            case ("2"):
-                try{
+            }
+            case ("2") -> {
+                try {
                     float[][] M;
                     float[] B;
                     int n;
                     System.out.println("Вы выбрали чтение");
-                    BufferedReader reader = new BufferedReader(new FileReader("/Users/Konstantin/dev/javaEdu/ComputationalMathematics/Lab1/untitled/src/test.txt"));
+                    BufferedReader reader = new BufferedReader(new FileReader("/Users/konstantin/dev/javaEdu/ComputationalMathematics/Lab1/untitled/src/edu/itmoEdu/vmLab1/test.txt"));
                     n = Integer.parseInt(reader.readLine());
                     M = new float[n][n];
                     B = new float[n];
-                    for(int i= 0;i < n; i++){
+                    for (int i = 0; i < n; i++) {
                         StringTokenizer inputMatrix = new StringTokenizer(reader.readLine());
                         while (inputMatrix.hasMoreTokens())
-                            for (int j = 0; j < n + 1 && inputMatrix.hasMoreTokens(); j++){
-                                if(j == n){
+                            for (int j = 0; j < n + 1 && inputMatrix.hasMoreTokens(); j++) {
+                                if (j == n) {
                                     B[i] = Float.parseFloat(inputMatrix.nextToken().replace(',', '.'));
-                                }else{
-                                M[i][j] = Float.parseFloat(inputMatrix.nextToken().replace(',', '.'));
+                                } else {
+                                    M[i][j] = Float.parseFloat(inputMatrix.nextToken().replace(',', '.'));
                                 }
                             }
                     }
@@ -86,17 +89,16 @@ public class Main {
                     gausSeidel.solveMatrix(M, B);
                 } catch (FileNotFoundException e) {
                     System.out.println("File not found!");
-                    try{
+                    try {
                         in.close();
-                    }catch (IOException b){
+                    } catch (IOException b) {
                         System.out.println("Error!");
                     }
-                    return;
                 } catch (IOException e) {
                     System.out.println("Error!");
                 }
-                break;
-            case ("3"):
+            }
+            case ("3") -> {
                 try {
                     float[][] M;
                     float[] B;
@@ -125,7 +127,7 @@ public class Main {
                         }
                         if (Math.abs(M[i][i]) <= sum) {
                             while (Math.abs(M[i][i]) <= sum) {
-                                M[i][i] = r.nextFloat(sum / n, (float) ((sum / n) + M[i][i] * 1.2));
+                                M[i][i] = r.nextFloat(sum, (float) (sum * 1.2));
                             }
                         }
                     }
@@ -146,17 +148,12 @@ public class Main {
                     eps = Float.parseFloat(in.readLine());
                     SeidelMethod gausSeidel = new SeidelMethod(eps);
                     gausSeidel.solveMatrix(M, B);
-                }catch (RuntimeException e) {
-                    System.out.println("Error!");
-                    in.close();
-                    return;
-                } catch (IOException e) {
+                } catch (RuntimeException | IOException e) {
                     System.out.println("Error!");
                     in.close();
                 }
-                break;
-            default:
-                System.out.println("Unexpected value");
+            }
+            default -> System.out.println("Unexpected value");
         }
     }
 }
